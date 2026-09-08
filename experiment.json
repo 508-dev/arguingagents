@@ -1,0 +1,20 @@
+{
+  "name": "Philosophical theory workshop",
+  "paseoUrl": "ws://127.0.0.1:6767/ws",
+  "workspaceId": "wks_271335127def2d10",
+  "timeoutMinutes": 180,
+  "models": [
+    {
+      "id": "ollama/hf.co/unsloth/Qwen3.8-27B-GGUF:UD-Q5_K_M",
+      "role": "propose"
+    },
+    {
+      "id": "ollama/deepseek-r1:32b",
+      "role": "respond"
+    },
+    {
+      "id": "ollama/gpt-oss:20b",
+      "role": "synthesize"
+    }
+  ]
+}

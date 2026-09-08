@@ -1,0 +1,12 @@
+{
+  "name": "philosophy-debate",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "experiment": "node src/experiment-cli.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@getpaseo/client": "0.7.2"
+  }
+}

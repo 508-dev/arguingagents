@@ -1,0 +1,1 @@
+Develop the strongest theory or proposed solution you can. State the problem as you understand it, make your premises explicit, show how the central claims follow, address the most serious foreseeable objections, and identify unresolved questions. Prefer a coherent and falsifiable position over a survey of possibilities.
