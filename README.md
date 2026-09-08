@@ -27,6 +27,14 @@ If the terminal disconnects while the agent continues in Paseo, reconnect and ru
 npm run experiment -- collect
 ```
 
+If a provider finishes without a usable answer, inspect its preserved Paseo session and reset the failed attempt with:
+
+```bash
+npm run experiment -- retry
+```
+
+This increments the attempt number and returns to `ready`; it still does not launch another model.
+
 ## Review Gate
 
 Accept the response as-is:

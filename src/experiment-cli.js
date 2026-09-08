@@ -27,6 +27,7 @@ Commands:
   accept [--notes TEXT]          Accept the current answer; does not start the next
   accept --notes-file PATH       Accept with review notes from a file
   reject [--notes TEXT]          Reject the answer and prepare another attempt
+  retry                          Clear a failed attempt after inspecting it
   unload                        Retry a failed GPU unload
   stop                          Mark the experiment complete
 
@@ -206,6 +207,20 @@ async function retryUnload() {
   printStatus(state);
 }
 
+async function retryFailed() {
+  const state = await loadState();
+  if (state.status !== "failed" || !state.active) {
+    throw new Error("The experiment does not have a failed attempt to retry");
+  }
+  await unloadModel(state.active.model);
+  state.nextAttempt += 1;
+  state.status = "ready";
+  state.active = null;
+  await saveState(state);
+  printStatus(state);
+  console.log("The failed Paseo session was preserved. Run the run command when ready.");
+}
+
 async function stop() {
   const state = await loadState();
   if (["running", "starting", "blocked_unload"].includes(state.status)) {
@@ -226,6 +241,7 @@ async function main() {
     case "collect": await collectRound(); break;
     case "accept": await review("accepted", options); break;
     case "reject": await review("rejected", options); break;
+    case "retry": await retryFailed(); break;
     case "unload": await retryUnload(); break;
     case "stop": await stop(); break;
     case "help":

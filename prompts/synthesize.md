@@ -1,1 +1,3 @@
 Produce a revised theory from the accepted discussion. Preserve claims that survived criticism, repair claims that can be repaired, and explicitly set aside claims that failed. Distinguish genuine agreement from unresolved disagreement. End with the strongest current formulation and the questions still preventing closure.
+
+Deliver a finished contribution of no more than 1,800 words. Do not narrate drafting or repeatedly reconsider possible formulations; present the synthesis directly.
