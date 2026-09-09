@@ -3,7 +3,15 @@ import { basename, dirname, join, resolve } from "node:path";
 import { spawn } from "node:child_process";
 
 export const ROOT = resolve(import.meta.dirname, "..");
-export const STATE_PATH = join(ROOT, "state.json");
+export const EXPERIMENTS_ROOT = join(ROOT, "experiments");
+export const CURRENT_EXPERIMENT_PATH = join(ROOT, ".current-experiment");
+
+export function experimentDirectory(slug) {
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
+    throw new Error("Experiment names must use lowercase letters, numbers, and single hyphens");
+  }
+  return join(EXPERIMENTS_ROOT, slug);
+}
 
 export async function readJson(path) {
   return JSON.parse(await readFile(path, "utf8"));
@@ -29,14 +37,15 @@ export function initialState() {
   };
 }
 
-export async function loadState() {
-  return (await readOptionalJson(STATE_PATH)) ?? initialState();
+export async function loadState(experimentDir) {
+  return (await readOptionalJson(join(experimentDir, "state.json"))) ?? initialState();
 }
 
-export async function saveState(state) {
-  const temporary = `${STATE_PATH}.tmp`;
+export async function saveState(experimentDir, state) {
+  const statePath = join(experimentDir, "state.json");
+  const temporary = `${statePath}.tmp`;
   await writeFile(temporary, `${JSON.stringify(state, null, 2)}\n`);
-  await rename(temporary, STATE_PATH);
+  await rename(temporary, statePath);
 }
 
 export function selectParticipant(config, roundNumber, modelOverride, roleOverride) {
@@ -60,17 +69,17 @@ export function roundFileName(round, attempt, modelId) {
   return `round-${String(round).padStart(3, "0")}-attempt-${String(attempt).padStart(2, "0")}-${safeModelName(modelId)}.md`;
 }
 
-export async function buildPrompt(state, participant) {
+export async function buildPrompt(experimentDir, state, participant) {
   const [problem, roleInstructions] = await Promise.all([
-    readFile(join(ROOT, "problem.md"), "utf8"),
+    readFile(join(experimentDir, "problem.md"), "utf8"),
     readFile(join(ROOT, "prompts", `${participant.role}.md`), "utf8"),
   ]);
 
   const accepted = await Promise.all(
     state.acceptedRounds.map(async (round) => {
       const [output, review] = await Promise.all([
-        readFile(join(ROOT, round.output), "utf8"),
-        round.review ? readFile(join(ROOT, round.review), "utf8") : Promise.resolve(""),
+        readFile(join(experimentDir, round.output), "utf8"),
+        round.review ? readFile(join(experimentDir, round.review), "utf8") : Promise.resolve(""),
       ]);
       return `## Accepted Round ${round.round}\n\n${output}${review ? `\n\n### Human Review\n\n${review}` : ""}`;
     }),
@@ -128,9 +137,9 @@ export async function unloadModel(modelId, waitMs = 20_000) {
   throw new Error(`Ollama still reports ${model} loaded after ${waitMs / 1000} seconds`);
 }
 
-export async function writeRound(active, response) {
+export async function writeRound(experimentDir, active, response) {
   const relativePath = join("rounds", roundFileName(active.round, active.attempt, active.model));
-  const absolutePath = join(ROOT, relativePath);
+  const absolutePath = join(experimentDir, relativePath);
   await mkdir(dirname(absolutePath), { recursive: true });
   const content = [
     `# Round ${active.round}: ${active.role}`,
@@ -145,12 +154,12 @@ export async function writeRound(active, response) {
   return relativePath;
 }
 
-export async function writeReview(active, decision, notes) {
+export async function writeReview(experimentDir, active, decision, notes) {
   const relativePath = join(
     "reviews",
     `round-${String(active.round).padStart(3, "0")}-attempt-${String(active.attempt).padStart(2, "0")}.md`,
   );
-  const absolutePath = join(ROOT, relativePath);
+  const absolutePath = join(experimentDir, relativePath);
   await mkdir(dirname(absolutePath), { recursive: true });
   await writeFile(absolutePath, [
     `# Review: Round ${active.round}, Attempt ${active.attempt}`,

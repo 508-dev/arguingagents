@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   initialState,
+  experimentDirectory,
   ollamaModelName,
   parseOptions,
   roundFileName,
@@ -17,6 +18,12 @@ test("initial state requires an explicit first run", () => {
     acceptedRounds: [],
     active: null,
   });
+});
+
+test("experiment directory names cannot escape their parent", () => {
+  assert.match(experimentDirectory("simulation-problem"), /experiments\/simulation-problem$/);
+  assert.throws(() => experimentDirectory("../outside"), /lowercase letters/);
+  assert.throws(() => experimentDirectory("Simulation Problem"), /lowercase letters/);
 });
 
 test("participants rotate without starting automatically", () => {

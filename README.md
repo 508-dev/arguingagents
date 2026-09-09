@@ -1,15 +1,39 @@
 # Philosophy Debate CLI
 
-Run sequential philosophical experiments using local Ollama models as fresh OpenCode agents. Paseo hosts each session for remote monitoring; files in this directory carry the accepted argument between otherwise independent models.
+Run sequential philosophical experiments using local Ollama models as fresh OpenCode agents. Paseo hosts each session for remote monitoring; each directory under `experiments/` carries one problem and its accepted argument between otherwise independent models.
 
 ## Setup
 
-1. Edit `problem.md`.
-2. Adjust the model order or roles in `experiment.json` if desired.
-3. Install dependencies with `npm install`.
-4. Check the state with `npm run experiment -- status`.
+1. Install dependencies with `npm install`.
+2. Create an experiment with `npm run experiment -- new <slug>`.
+3. Edit `experiments/<slug>/problem.md`.
+4. Adjust the shared model order or roles in `experiment.json` if desired.
+5. Check the selected experiment with `npm run experiment -- status`.
 
 The configured models are already installed in this machine's Ollama library. New OpenCode sessions load the project-local `opencode.json`, which makes them selectable without changing the global OpenCode configuration.
+
+## Manage Experiments
+
+Create and automatically select a new experiment:
+
+```bash
+npm run experiment -- new personal-identity --name "Personal Identity"
+```
+
+List all chains or switch the selected chain:
+
+```bash
+npm run experiment -- list
+npm run experiment -- use simulation-problem
+```
+
+Most commands operate on the selected experiment. Use `--experiment <slug>` to target another chain without changing the selection:
+
+```bash
+npm run experiment -- status --experiment personal-identity
+```
+
+The first completed chain is preserved under `experiments/simulation-problem/`.
 
 ## Run A Round
 
@@ -17,7 +41,7 @@ The configured models are already installed in this machine's Ollama library. Ne
 npm run experiment -- run
 ```
 
-The command creates an agent in the existing Paseo philosophy workspace, waits for the response, saves it under `rounds/`, asks Ollama to unload the model, and verifies the model is absent from Ollama's process list. The Paseo session remains available for review.
+The command creates an agent in the existing Paseo philosophy workspace, waits for the response, saves it under the selected experiment's `rounds/`, asks Ollama to unload the model, and verifies the model is absent from Ollama's process list. The Paseo session remains available for review.
 
 For fully remote operation, open a terminal tab in that same Paseo workspace and run these commands there. The terminal controls the state machine while each generated agent appears as its own reviewable Paseo session.
 
@@ -72,4 +96,4 @@ npm run experiment -- run --model ollama/gpt-oss:20b --role respond
 - `failed`: the Paseo turn failed and requires inspection.
 - `complete`: the experiment was stopped.
 
-Check state at any time with `npm run experiment -- status`. Raw round files and reviews are created with exclusive writes so retries cannot overwrite prior contributions.
+Check state at any time with `npm run experiment -- status`. Each experiment has its own `problem.md`, `state.json`, `rounds/`, and `reviews/`. Raw round files and reviews are created with exclusive writes so retries cannot overwrite prior contributions.
