@@ -9,7 +9,23 @@
       "role": "propose"
     },
     {
+      "id": "ollama/magistral:24b",
+      "role": "respond"
+    },
+    {
+      "id": "ollama/gemma4:31b",
+      "role": "respond"
+    },
+    {
       "id": "ollama/deepseek-r1:32b",
+      "role": "respond"
+    },
+    {
+      "id": "ollama/phi4-reasoning:plus",
+      "role": "respond"
+    },
+    {
+      "id": "ollama/muse-glimmer:30b",
       "role": "respond"
     },
     {

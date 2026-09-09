@@ -54,6 +54,34 @@
             "context": 65536,
             "output": 32768
           }
+        },
+        "gemma4:31b": {
+          "name": "Gemma 4 31B",
+          "limit": {
+            "context": 65536,
+            "output": 32768
+          }
+        },
+        "magistral:24b": {
+          "name": "Magistral 24B",
+          "limit": {
+            "context": 40000,
+            "output": 16000
+          }
+        },
+        "phi4-reasoning:plus": {
+          "name": "Phi-4 Reasoning Plus",
+          "limit": {
+            "context": 32768,
+            "output": 16384
+          }
+        },
+        "muse-glimmer:30b": {
+          "name": "Muse Glimmer 30B",
+          "limit": {
+            "context": 65536,
+            "output": 32768
+          }
         }
       }
     }
